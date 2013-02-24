@@ -1,0 +1,10 @@
+ hi
+   this is
+a    
+test !!
+
+//commentary
+
+A=M+D
+
+   0;JMP

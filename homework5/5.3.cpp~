@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <thread>
+#include <future>
+#include <numeric>
+
+#define NUM_THREADS 100
+
+using namespace std;
+
+__thread unsigned work_units;
+
+mutex work_mutex;
+
+void doWork() {}
+
+void func(int *result) {
+	work_units = 0;
+	int count = 0;
+	int times = rand() % 100000;
+	while (count < times) {
+		++work_units;
+		doWork();
+		++count;
+	}
+
+	lock_guard<mutex> lck(work_mutex);
+	*result += work_units;
+}
+
+void func2(int *counter_vector, int index) {
+	counter_vector[index] = 0;
+	int count = 0;
+	int times = rand() % 100000;
+	while (count < times) {
+		counter_vector[index] += 1;
+		doWork();
+		++count;
+	}
+}
+
+int func3() {
+	work_units = 0;
+	int count = 0;
+	int times = rand() % 100000;
+	while (count < times) {
+		++work_units;
+		doWork();
+		++count;
+	}
+	return work_units;
+}
+
+void silly() {
+	vector<int> sillyvec;
+
+	for (int i=0; i<100; ++i) {
+		sillyvec.push_back(i);
+	}
+
+	int res = accumulate(sillyvec.begin(), sillyvec.end(), 0);
+	cout << "accumulated result: " << res << endl;
+}
+
+int main() {
+	int result=0;
+	int result2 = 0;
+	int result3 = 0;
+	vector<thread> threads;
+	int *counter = new int[NUM_THREADS];
+	srand((unsigned)time(NULL));
+
+	vector<future<int> > futures(NUM_THREADS);
+
+	for (int i=0; i<NUM_THREADS; ++i) {
+		threads.push_back(thread(func2, counter, i));
+		futures[i] = async(func3);
+	}
+
+	for (int i=0; i<NUM_THREADS; ++i) {
+		threads[i].join();
+	}
+
+	for (int i=0; i<NUM_THREADS; ++i) {
+		result3 += futures[i].get();
+	}
+
+	for (int i=0; i<NUM_THREADS; ++i) {
+		result2 += counter[i];
+	}
+
+	cout << "doWork() was called " << result3 << " times" << endl;
+
+	silly();
+}
