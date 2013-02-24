@@ -15,13 +15,6 @@ int currentLine, currentYear, linesToRead;
 vector<string> lines;
 vector<double> yearlyStrength(161);
 
-/*
-1) Find a line with 'M=' in it
-2) Record the number of lines to read
-3) set the year
-4) set currentLine to one after the 'M=' line
-*/
-
 vector<string> tokenize(string s) {
 	istringstream iss(s);
 	vector<string> tokens;
@@ -40,8 +33,10 @@ bool setUpNextLine() {
 	if (currentLine == lines.size()-1) return false;
 	vector<string> tokens = tokenize(nextLine);
 	if (contains(tokens[2], "M=")) {
+		/* update the year */
 		string date = tokens[1];
 		currentYear = atoi(date.substr(date.size()-4).c_str());
+		/*get the number of lines to read*/
 		if (tokens[2] == "M=")
 			linesToRead = atoi(tokens[3].c_str());
 		else
@@ -51,6 +46,7 @@ bool setUpNextLine() {
 	return false;
 }
 
+/* converts MPH to a storm category */
 double cat(string mph_str) {
 	int mph = atoi(mph_str.c_str());
 	if (mph >= 74 && mph < 96) return 1.0;
@@ -60,18 +56,18 @@ double cat(string mph_str) {
 	return 5.0;
 }
 
-void averageLines() {
+/* gets the category from each line and adds it to that year's total */
+void update() {
 	double total = 0.0;
 	for (int i=0; i<linesToRead; ++i) {
 		vector<string> tokens = tokenize(nextLine);
-		double subtotal = cat(tokens[3]);
-		subtotal += cat(tokens[6]);
-		subtotal += cat(tokens[9]);
-		subtotal += cat(tokens[12]);
-		subtotal /= 4.0;
-		total += subtotal;
+		total += cat(tokens[3]);
+		total += cat(tokens[6]);
+		total += cat(tokens[9]);
+		total += cat(tokens[12]);
 	}
-	yearlyStrength[currentYear-1851] += total;
+	yearlyStrength[currentYear-1851] += total/4.0;
+	/*skip the next line*/
 	if (currentLine < lines.size()-1) nextLine;
 }
 
@@ -90,10 +86,7 @@ int main(int argc, char **argv) {
 	}
 	in.close();
 
-	cout << "Total " << lines.size() << " lines to read" << endl;
-
-	while(setUpNextLine())
-		averageLines();
+	while(setUpNextLine()) update();
 
 	for (int i=0; i<yearlyStrength.size(); ++i)
 		cout << i+1851 << ": " << yearlyStrength[i] << endl;
