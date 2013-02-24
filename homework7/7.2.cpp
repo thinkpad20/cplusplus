@@ -28,13 +28,14 @@ vector<string> tokenize(string s) {
 	return tokens;
 }
 
-// bool setUpNextLine() {
-// 	while (currentLine < lines.size() && currentLine.find("M=") != string::npos)
-// 		++currentLine;
-// 	/* Now we have a line with M= in it. let's pull some data from that line */
-
-// 	return false;
-// }
+bool setUpNextLine() {
+	while (currentLine < lines.size() && currentLine.find("M=") != string::npos)
+		++currentLine;
+	/* Now we have a line with M= in it. let's pull some data from that line */
+	vector<string> tokens = tokenize(lines[currentLine++]);
+	
+	return false;
+}
 
 
 int main(int argc, char **argv) {
