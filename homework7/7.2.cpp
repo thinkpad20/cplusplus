@@ -7,10 +7,13 @@
 
 using namespace std;
 
+/* define a macro to get the line and increment currentLine */
+#define nextLine lines[currentLine++]
+
 string filename = "hurdat_atlantic_1851-2011.txt";
-string currentLine, currentYear, linesToRead;
+int currentLine, currentYear, linesToRead;
 vector<string> lines;
-vector<int> yearlyStrength;
+vector<double> yearlyStrength(161);
 
 /*
 1) Find a line with 'M=' in it
@@ -28,37 +31,71 @@ vector<string> tokenize(string s) {
 	return tokens;
 }
 
+bool contains(string str, string target) {
+	return str.find(target) != string::npos;
+}
+
 bool setUpNextLine() {
-	while (currentLine < lines.size() && currentLine.find("M=") != string::npos)
-		++currentLine;
-	/* Now we have a line with M= in it. let's pull some data from that line */
-	vector<string> tokens = tokenize(lines[currentLine++]);
-	
+	/* have a line with M= in it. let's get the tokens from that line */
+	if (currentLine == lines.size()-1) return false;
+	vector<string> tokens = tokenize(nextLine);
+	if (contains(tokens[2], "M=")) {
+		string date = tokens[1];
+		currentYear = atoi(date.substr(date.size()-4).c_str());
+		if (tokens[2] == "M=")
+			linesToRead = atoi(tokens[3].c_str());
+		else
+			linesToRead = atoi(tokens[2].substr(2).c_str());
+		return true;
+	}
 	return false;
 }
 
+double cat(string mph_str) {
+	int mph = atoi(mph_str.c_str());
+	if (mph >= 74 && mph < 96) return 1.0;
+	if (mph >= 96 && mph < 111) return 2.0;
+	if (mph >= 111 && mph < 131) return 3.0;
+	if (mph >= 131 && mph < 156) return 4.0;
+	return 5.0;
+}
+
+void averageLines() {
+	double total = 0.0;
+	for (int i=0; i<linesToRead; ++i) {
+		vector<string> tokens = tokenize(nextLine);
+		double subtotal = cat(tokens[3]);
+		subtotal += cat(tokens[6]);
+		subtotal += cat(tokens[9]);
+		subtotal += cat(tokens[12]);
+		subtotal /= 4.0;
+		total += subtotal;
+	}
+	yearlyStrength[currentYear-1851] += total;
+	if (currentLine < lines.size()-1) nextLine;
+}
 
 int main(int argc, char **argv) {
-	// int numLines, lineCount = 0;
-	// if (argc == 1) numLines = 10;
-	// else numLines = atoi(argv[1]);
-	// ifstream in;
-	// in.open(filename.c_str());
-	// if (in.is_open()) {
-	// 	while(lineCount < numLines && in.good()) {
-	// 		getline(in, currentLine);
-	// 		lines.push_back(currentLine);
-	// 		++lineCount;
-	// 	}
-	// }
-	// in.close();
-	// for (int i=0; i<lines.size(); ++i)
-	// 	cout << lines[i] << endl;
+	int numLines = INT_MAX, lineCount = 0;
+	ifstream in;
 
-	string foo = "this is a big string";
-	vector<string> fooTokens = tokenize(foo);
-	for (int i=0; i<fooTokens.size(); ++i)
-		cout << fooTokens[i] << endl;
+	in.open(filename.c_str());
+	if (in.is_open()) {
+		while(lineCount < numLines && in.good()) {
+			string line;
+			getline(in, line);
+			lines.push_back(line);
+			++lineCount;
+		}
+	}
+	in.close();
 
+	cout << "Total " << lines.size() << " lines to read" << endl;
+
+	while(setUpNextLine())
+		averageLines();
+
+	for (int i=0; i<yearlyStrength.size(); ++i)
+		cout << i+1851 << ": " << yearlyStrength[i] << endl;
 	return 0;
 }
