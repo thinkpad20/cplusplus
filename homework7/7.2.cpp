@@ -50,10 +50,11 @@ bool setup() {
 /* converts MPH to a storm category */
 double cat(string mph_str) {
 	int mph = atoi(mph_str.c_str());
-	if (mph >= 74 && mph < 96) return 1.0;
-	if (mph >= 96 && mph < 111) return 2.0;
-	if (mph >= 111 && mph < 131) return 3.0;
-	if (mph >= 131 && mph < 156) return 4.0;
+	if (mph < 64) return 0.0;
+	if (mph >= 64 && mph < 82) return 1.0;
+	if (mph >= 83 && mph < 95) return 2.0;
+	if (mph >= 96 && mph < 113) return 3.0;
+	if (mph >= 114 && mph < 135) return 4.0;
 	return 5.0;
 }
 
