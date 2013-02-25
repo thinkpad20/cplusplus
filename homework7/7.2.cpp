@@ -75,7 +75,7 @@ void update() {
 int main(int argc, char **argv) {
 	int numLines = INT_MAX, lineCount = 0;
 	ifstream in;
-
+	/* load the file into a vector of strings */
 	in.open(filename.c_str());
 	if (in.is_open()) {
 		while(lineCount < numLines && in.good()) {
@@ -86,9 +86,12 @@ int main(int argc, char **argv) {
 		}
 	}
 	in.close();
-
+	/* zero the initial values */
+	for (int i=0; i<161; ++i)
+		yearlyStrength[i] = 0.0;
+	/* compute the averages */
 	while(setup()) update();
-
+	/* print the results */
 	for (int i=0; i<yearlyStrength.size(); ++i)
 		cout << i+1851 << ": " << yearlyStrength[i] << endl;
 	return 0;
