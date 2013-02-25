@@ -47,14 +47,14 @@ bool setup() {
 	return false;
 }
 
-/* converts MPH to a storm category */
-double cat(string mph_str) {
-	int mph = atoi(mph_str.c_str());
-	if (mph < 64) return 0.0;
-	if (mph >= 64 && mph < 82) return 1.0;
-	if (mph >= 83 && mph < 95) return 2.0;
-	if (mph >= 96 && mph < 113) return 3.0;
-	if (mph >= 114 && mph < 135) return 4.0;
+/* converts knots to a storm category */
+double cat(string knots_str) {
+	int knots = atoi(knots_str.c_str());
+	if (knots < 64) return 0.0;
+	if (knots >= 64 && knots < 82) return 1.0;
+	if (knots >= 83 && knots < 95) return 2.0;
+	if (knots >= 96 && knots < 113) return 3.0;
+	if (knots >= 114 && knots < 135) return 4.0;
 	return 5.0;
 }
 
