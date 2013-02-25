@@ -38,9 +38,9 @@ bool setup() {
 		string date = tokens[1];
 		currentYear = atoi(date.substr(date.size()-4).c_str());
 		/*get the number of lines to read*/
-		if (tokens[2] == "M=")
+		if (tokens[2] == "M=") /* then the next token tells us how many. */
 			linesToRead = atoi(tokens[3].c_str());
-		else
+		else /* then the number of lines to read is contained in this token. */
 			linesToRead = atoi(tokens[2].substr(2).c_str());
 		return true;
 	}
