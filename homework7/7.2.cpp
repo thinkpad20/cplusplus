@@ -28,7 +28,8 @@ bool contains(string str, string target) {
 	return str.find(target) != string::npos;
 }
 
-bool setUpNextLine() {
+/* updates the date, and gets the number of lines to process */
+bool setup() {
 	/* have a line with M= in it. let's get the tokens from that line */
 	if (currentLine == lines.size()-1) return false;
 	vector<string> tokens = tokenize(nextLine);
@@ -68,7 +69,7 @@ void update() {
 	}
 	yearlyStrength[currentYear-1851] += total/4.0;
 	/*skip the next line*/
-	if (currentLine < lines.size()-1) nextLine;
+	nextLine;
 }
 
 int main(int argc, char **argv) {
@@ -86,7 +87,7 @@ int main(int argc, char **argv) {
 	}
 	in.close();
 
-	while(setUpNextLine()) update();
+	while(setup()) update();
 
 	for (int i=0; i<yearlyStrength.size(); ++i)
 		cout << i+1851 << ": " << yearlyStrength[i] << endl;
