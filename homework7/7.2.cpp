@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 			lines.push_back(line);
 			++lineCount;
 		}
-	}
+	} else { cout << "File Error" << endl; return 0; }
 	in.close();
 	/* zero the initial values */
 	for (int i=0; i<161; ++i)
